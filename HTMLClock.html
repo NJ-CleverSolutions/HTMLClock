@@ -1,0 +1,93 @@
+
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>Clock</title>
+    <style>
+      body {
+        overflow: hidden;
+        margin: 0;
+        background-size: cover;
+		background-color: black;
+	background-repeat: no-repeat;
+	}
+      .center { 
+        height: 100vh;
+        position: relative;
+        border: 0; 
+      }
+      .center p {
+        margin: 0;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        -ms-transform: translate(-50%, -50%);
+        transform: translate(-50%, -50%);
+      }
+      p {
+        font-family:Monospace;
+        font-size:2000%
+      }
+    </style>
+  </head>
+  <body>
+    <div class="center">
+	 <p id="timeDisplay" style="color: orangered;"></p>
+    </div>
+    <script>
+
+    function replaceQueryParam(param, newval, search) {
+        var regex = new RegExp("([?;&])" + param + "[^&;]*[;&]?");
+        var query = search.replace(regex, "$1").replace(/&$/, '');
+
+        return (query.length > 2 ? query + "&" : "?") + (newval ? param + "=" + newval : '');
+    }
+
+    var urlParams = new URLSearchParams(window.location.search);
+    urlString = window.location.search
+
+    if (urlParams.has('clock')) {
+      clock = '#' + urlParams.get('clock')
+    }
+    else {
+      clock = "#ff00ff"
+      urlString = replaceQueryParam('clock', 'ff00ff', urlString)
+    }
+
+    if (urlParams.has('bg')) {
+      background = '#' + urlParams.get('bg')
+    }
+    else {
+      background = "#000000"
+      urlString = replaceQueryParam('bg', '000000', urlString)
+    }
+
+    window.history.pushState('', '', window.location.pathname + urlString)
+
+    var timeStep = 100
+    
+    const timer = ms => new Promise(res => setTimeout(res, ms))
+
+    async function mainLoop() {
+        while (true) { 
+            date = new Date()
+            hours = date.getHours();
+            minutes = date.getMinutes();
+            seconds = date.getSeconds();
+	    <!--String.fromCharCode(160)-->
+            hours = hours < 10 ? '0' + hours : hours;
+	    minutes = minutes < 10 ? '0'+minutes : minutes;
+            seconds = seconds < 10 ? '0'+seconds : seconds;
+            document.getElementById("timeDisplay").innerHTML = hours + ':' + minutes + ':' + seconds;
+            await timer(timeStep);
+        }
+    }
+
+    document.body.style.backgroundColor = background
+    document.getElementById("timeDisplay").style.color = clock
+    mainLoop();
+
+    </script>
+  </body>
+</html>
